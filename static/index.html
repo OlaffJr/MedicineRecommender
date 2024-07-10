@@ -1,0 +1,100 @@
+       <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medicine Recommender</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            width: 50%;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            margin-top: 50px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        .input-group button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .input-group button:hover {
+            background-color: #0056b3;
+        }
+        .results {
+            margin-top: 20px;
+        }
+        .medicine {
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Medicine Recommender</h1>
+        <div class="input-group">
+            <label for="disease">Enter Disease Name:</label>
+            <input type="text" id="disease" name="disease">
+        </div>
+        <div class="input-group">
+            <button onclick="getMedicines()">Get Medicines</button>
+        </div>
+        <div class="results" id="results"></div>
+    </div>
+
+    <script>
+        function getMedicines() {
+            const diseaseName = document.getElementById('disease').value;
+            fetch(`/medicines/${diseaseName}`)
+                .then(response => response.json())
+                .then(data => {
+                    const resultsDiv = document.getElementById('results');
+                    resultsDiv.innerHTML = '';  // Clear previous results
+                    if (data.length === 0) {
+                        resultsDiv.innerHTML = '<p>No medicines found for this disease.</p>';
+                    } else {
+                        data.forEach(medicine => {
+                            const medicineDiv = document.createElement('div');
+                            medicineDiv.classList.add('medicine');
+                            medicineDiv.innerHTML = `
+                                <h3>${medicine.medicine_name}</h3>
+                                <p><strong>Price:</strong> ${medicine.price}</p>
+                                <p><strong>Introduction:</strong> ${medicine.description}</p>
+                                <p><strong>Directions:</strong> ${medicine.directions}</p>
+                                <p><strong>Side Effects:</strong> ${medicine.side_effects}</p>
+                            `;
+                            resultsDiv.appendChild(medicineDiv);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                    const resultsDiv = document.getElementById('results');
+                    resultsDiv.innerHTML = '<p>Error fetching data. Please try again later.</p>';
+                });
+        }
+    </script>
+</body>
+</html>
